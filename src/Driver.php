@@ -10,6 +10,7 @@ interface Driver
 
     /**
      * @param \Iterator $cursor
+     *
      * @return array
      */
     public function fetch(\Iterator $cursor);
@@ -17,34 +18,39 @@ interface Driver
     /**
      * @param $collection
      * @param array $query
+     *
      * @return \Iterator
      */
-    public function find($collection, array $query = array());
+    public function find($collection, array $query = []);
 
     /**
      * @param string $collection
      * @param object $document
+     *
      * @return void
      */
     public function insert($collection, $document);
 
     /**
      * @param string $collection
-     * @param array $criteria
+     * @param array  $criteria
      * @param object $document
+     *
      * @return void
      */
     public function update($collection, $criteria, $document);
 
     /**
      * @param string $collection
-     * @param array $criteria
+     * @param array  $criteria
+     *
      * @return void
      */
     public function remove($collection, $criteria);
 
     /**
      * @param Collection $collection
+     *
      * @return array
      */
     public function generateQuery(Collection $collection);

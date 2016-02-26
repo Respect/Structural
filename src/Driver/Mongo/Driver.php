@@ -20,8 +20,9 @@ class Driver implements BaseDriver
 
     /**
      * Driver constructor.
+     *
      * @param \MongoClient $connection
-     * @param string $database
+     * @param string       $database
      */
     public function __construct(\MongoClient $connection, $database)
     {
@@ -44,26 +45,30 @@ class Driver implements BaseDriver
 
     /**
      * @param \Iterator $cursor
+     *
      * @return array
      */
     public function fetch(\Iterator $cursor)
     {
         $cursor->next();
+
         return $cursor->current();
     }
 
     /**
      * @param array $collection
      * @param array $query
+     *
      * @return \Iterator
      */
-    public function find($collection, array $query = array())
+    public function find($collection, array $query = [])
     {
         return $this->getDatabase()->{$collection}->find($query);
     }
 
     /**
      * @param Collection $collection
+     *
      * @return array
      */
     public function generateQuery(Collection $collection)
@@ -73,6 +78,7 @@ class Driver implements BaseDriver
 
     /**
      * @param Collection $collection
+     *
      * @return array
      */
     protected function parseConditions(Collection $collection)
@@ -83,8 +89,9 @@ class Driver implements BaseDriver
 
         $condition = $this->getConditionArray($collection);
 
-        foreach ($allCollections as $name => $coll)
+        foreach ($allCollections as $coll) {
             $condition += $this->getConditionArray($coll, true);
+        }
 
         return $condition;
     }
@@ -92,6 +99,7 @@ class Driver implements BaseDriver
     /**
      * @param Collection $collection
      * @param bool|false $prefix
+     *
      * @return array
      */
     protected function getConditionArray(Collection $collection, $prefix = false)
@@ -99,32 +107,36 @@ class Driver implements BaseDriver
         $condition = $collection->getCondition();
 
         if (!is_array($condition)) {
-            $condition = array('_id' => $this->createMongoId($condition));
+            $condition = ['_id' => $this->createMongoId($condition)];
         }
 
-        if ($prefix)
-            $condition = static::prefixArrayKeys($condition, $collection->getName() . ".");
+        if ($prefix) {
+            $condition = static::prefixArrayKeys($condition, $collection->getName() . '.');
+        }
 
         return $condition;
     }
 
     /**
-     * @param array $array
+     * @param array  $array
      * @param string $prefix
+     *
      * @return array
      */
     protected static function prefixArrayKeys(array $array, $prefix)
     {
-        $new = array();
+        $new = [];
 
-        foreach ($array as $key => $value)
+        foreach ($array as $key => $value) {
             $new["{$prefix}{$key}"] = $value;
+        }
 
         return $new;
     }
 
     /**
      * @param int|string $id
+     *
      * @return \MongoId|\MongoInt32
      */
     protected function createMongoId($id)
@@ -132,12 +144,14 @@ class Driver implements BaseDriver
         if (is_int($id)) {
             return new \MongoInt32($id);
         }
+
         return new \MongoId($id);
     }
 
     /**
      * @param Collection $collection
      * @param $document
+     *
      * @return void
      */
     public function insert($collection, $document)
