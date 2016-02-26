@@ -42,19 +42,23 @@
     ],
     "require": {
         "php": "^5.6 || ^7.0",
-        "Respect/Data": "dev-master"
-    },
-    "scripts": {
-        "tests": "phpunit --colors",
-        "coverage": "phpunit --coverage-html build/coverage tests",
-        "md": "phpmd src,tests text cleancode,codesize,controversial,design,naming,unusedcode",
-        "csfix": "php-cs-fixer fix"
+        "respect/data": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.2",
         "phpmd/phpmd": "^2.3",
         "squizlabs/php_codesniffer": "^2.5",
         "fabpot/php-cs-fixer": "^1.11"
+    },
+    "suggest": {
+        "ext-mongo": "@stable",
+        "ext-mongodb": "@stable"
+    },
+    "scripts": {
+        "tests": "phpunit --colors",
+        "coverage": "phpunit --coverage-html build/coverage tests",
+        "md": "phpmd src,tests text cleancode,codesize,controversial,design,naming,unusedcode",
+        "csfix": "php-cs-fixer fix"
     },
     "autoload": {
         "psr-4": {
