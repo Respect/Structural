@@ -50,9 +50,9 @@ class Driver implements BaseDriver
      */
     public function fetch(\Iterator $cursor)
     {
+        $data = $cursor->current();
         $cursor->next();
-
-        return $cursor->current();
+        return $data;
     }
 
     /**
@@ -63,7 +63,9 @@ class Driver implements BaseDriver
      */
     public function find($collection, array $query = [])
     {
-        return $this->getDatabase()->{$collection}->find($query);
+        $cursor = $this->getDatabase()->{$collection}->find($query);
+        $cursor->rewind();
+        return $cursor;
     }
 
     /**
