@@ -1,0 +1,43 @@
+filter:
+    excluded_paths:
+        - 'vendor/*'
+        - 'tests/*'
+    paths:
+        - 'src/*'
+tools:
+    php_analyzer: true
+    php_changetracking: true
+    php_code_sniffer:
+        enabled: true
+        config:
+            standard: PSR2
+    php_cpd: true
+    php_mess_detector: true
+    php_pdepend: true
+    php_sim: true
+
+build:
+    dependencies:
+        before:
+            - "yes '' | pecl -q install -f mongo-stable"
+            - "sudo composer self-update"
+        override:
+            - "composer install --no-dev --no-interaction --prefer-dist"
+    tests:
+        override:
+            -
+                command: 'phpunit -c phpunit.xml.dist --coverage-clover=clover.xml'
+                coverage:
+                    file: 'clover.xml'
+                    format: 'php-clover'
+    environment:
+        php:
+            version: 5.6
+        mysql: false
+        postgresql: false
+        redis: false
+        elasticsearch: false
+        rabbitmq: false
+        mongodb: false
+        neo4j: false
+        memcached: false
