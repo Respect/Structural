@@ -20,9 +20,10 @@ build:
     dependencies:
         before:
             - "yes '' | pecl -q install -f mongo-stable"
+            - "yes '' | pecl -q install -f mongodb-stable"
             - "sudo composer self-update"
         override:
-            - "composer install --no-dev --no-interaction --prefer-dist"
+            - composer install --no-interaction --prefer-dist
     tests:
         override:
             -

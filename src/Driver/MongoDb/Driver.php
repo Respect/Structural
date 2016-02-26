@@ -1,7 +1,10 @@
 <?php
 
-namespace Respect\Structural\Driver\Mongo;
+namespace Respect\Structural\Driver\MongoDb;
 
+use MongoDB\BSON\ObjectID;
+use MongoDB\Client as MongoDBClient;
+use MongoDB\Database;
 use Respect\Data\CollectionIterator;
 use Respect\Data\Collections\Collection;
 use Respect\Structural\Driver as BaseDriver;
@@ -9,35 +12,38 @@ use Respect\Structural\Driver as BaseDriver;
 class Driver implements BaseDriver
 {
     /**
-     * @var \MongoClient
+     * @var MongoDBClient
      */
     private $connection;
 
     /**
-     * @var \MongoDB
+     * @var Database
      */
     private $database;
 
     /**
      * Driver constructor.
      *
-     * @param \MongoClient $connection
-     * @param string       $database
+     * @param MongoDBClient $connection
+     * @param string        $database
      */
-    public function __construct(\MongoClient $connection, $database)
+    public function __construct(MongoDBClient $connection, $database)
     {
         $this->connection = $connection;
-        $this->database = $connection->{$database};
+        $this->database = $connection->selectDatabase($database);
     }
 
     /**
-     * @return \MongoDB
+     * @return Database
      */
     public function getDatabase()
     {
         return $this->database;
     }
 
+    /**
+     * @return MongoDBClient
+     */
     public function getConnection()
     {
         return $this->connection;
@@ -50,8 +56,11 @@ class Driver implements BaseDriver
      */
     public function fetch(\Iterator $cursor)
     {
-        $data = $cursor->current();
-        $cursor->next();
+        $data = null;
+        if ($cursor->valid()) {
+            $data = $cursor->current();
+            $cursor->next();
+        }
 
         return $data;
     }
@@ -64,10 +73,11 @@ class Driver implements BaseDriver
      */
     public function find($collection, array $query = [])
     {
-        $cursor = $this->getDatabase()->{$collection}->find($query);
-        $cursor->rewind();
+        $cursor = $this->getDatabase()->selectCollection($collection)->find($query);
+        $iterator = new \IteratorIterator($cursor);
+        $iterator->rewind();
 
-        return $cursor;
+        return $iterator;
     }
 
     /**
@@ -111,7 +121,7 @@ class Driver implements BaseDriver
         $condition = $collection->getCondition();
 
         if (!is_array($condition)) {
-            $condition = ['_id' => $this->createMongoId($condition)];
+            $condition = ['_id' => new ObjectID($condition)];
         }
 
         if ($prefix) {
@@ -139,20 +149,6 @@ class Driver implements BaseDriver
     }
 
     /**
-     * @param int|string $id
-     *
-     * @return \MongoId|\MongoInt32
-     */
-    protected function createMongoId($id)
-    {
-        if (is_int($id)) {
-            return new \MongoInt32($id);
-        }
-
-        return new \MongoId($id);
-    }
-
-    /**
      * @param Collection $collection
      * @param $document
      *
@@ -160,16 +156,21 @@ class Driver implements BaseDriver
      */
     public function insert($collection, $document)
     {
-        $this->getDatabase()->{$collection}->insert($document);
+        $result = $this->getDatabase()->selectCollection($collection)->insertOne($document);
+        $document->_id = $result->getInsertedId();
     }
 
     public function update($collection, $criteria, $document)
     {
-        $this->getDatabase()->{$collection}->update($criteria, $document);
+        $this->getDatabase()->selectCollection($collection)->updateOne($criteria, ['$set' => $document]);
     }
 
+    /**
+     * @param string $collection
+     * @param array  $criteria
+     */
     public function remove($collection, $criteria)
     {
-        $this->getDatabase()->{$collection}->remove($criteria);
+        $this->getDatabase()->selectCollection($collection)->deleteOne($criteria);
     }
 }
