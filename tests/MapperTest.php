@@ -43,6 +43,7 @@ class MapperTest extends \PHPUnit_Framework_TestCase
         $author->name = 'Respect Structural';
         $mapper->authors->persist($author);
         $mapper->flush();
+
         return $author;
     }
 

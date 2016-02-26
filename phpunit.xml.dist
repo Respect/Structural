@@ -1,6 +1,6 @@
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
-         bootstrap="bootstrap.php"
+         bootstrap="vendor/autoload.php"
          cacheTokens="true"
          colors="true"
          convertErrorsToExceptions="true"
@@ -10,6 +10,9 @@
          stopOnFailure="false"
          syntaxCheck="false"
          verbose="false">
+    <php>
+        <ini name="date.timezone" value="UTC" />
+    </php>
     <testsuites>
         <testsuite name="all">
             <directory suffix="Test.php">tests</directory>

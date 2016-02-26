@@ -1,10 +1,10 @@
 <?php
 
-namespace Respect\Structural\Tests\Driver\Mongo;
+namespace Respect\Structural\tests\Driver\Mongo;
 
 use Respect\Data\Collections\Collection;
-use Respect\Structural\Driver\Mongo\Driver;
 use Respect\Structural\Driver as BaseDriver;
+use Respect\Structural\Driver\Mongo\Driver;
 
 class DriverTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,7 +25,6 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->driver = new Driver($client, 'collection');
-
     }
 
     public function testDriverShouldAnInstanceOfDriverInterface()
@@ -47,7 +46,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateQueryShouldUsePartialResultSets()
     {
-        $result = $this->driver->generateQuery(Collection::article()->author["56cf5c943f90a847400041ac"]);
-        $this->assertEquals(['author._id' => new \MongoId("56cf5c943f90a847400041ac")], $result);
+        $result = $this->driver->generateQuery(Collection::article()->author['56cf5c943f90a847400041ac']);
+        $this->assertEquals(['author._id' => new \MongoId('56cf5c943f90a847400041ac')], $result);
     }
 }
