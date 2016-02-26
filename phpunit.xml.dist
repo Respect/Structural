@@ -1,5 +1,5 @@
 <phpunit backupGlobals="false"
-         backupStaticAttributes="false" 
+         backupStaticAttributes="false"
          bootstrap="bootstrap.php"
          cacheTokens="true"
          colors="true"
@@ -10,9 +10,14 @@
          stopOnFailure="false"
          syntaxCheck="false"
          verbose="false">
+    <testsuites>
+        <testsuite name="all">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
     <filter>
         <whitelist>
-            <directory>../library/</directory>
+            <directory>src</directory>
         </whitelist>
     </filter>
 </phpunit>
