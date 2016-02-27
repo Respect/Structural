@@ -6,6 +6,9 @@ use Respect\Data\Collections\Collection;
 
 interface Driver
 {
+    /**
+     * @return mixed
+     */
     public function getConnection();
 
     /**

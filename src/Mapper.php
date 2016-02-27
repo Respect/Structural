@@ -333,6 +333,12 @@ class Mapper extends AbstractMapper implements
         }
     }
 
+    /**
+     * @param \SplObjectStorage $entities
+     * @param $sub
+     * @param $field
+     * @param $value
+     */
     protected function tryHydration($entities, $sub, $field, &$value)
     {
         $tableName = $entities[$sub]->getName();

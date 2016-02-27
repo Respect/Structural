@@ -2,15 +2,14 @@
 
 namespace Respect\Structural\Driver\MongoDb;
 
-use Respect\Structural\Driver\Exception as DriverException;
-use MongoDB\Client as MongoDBClient;
 use Respect\Data\Collections\Collection;
 use Respect\Structural\Driver as BaseDriver;
+use Respect\Structural\Driver\Exception as DriverException;
 
 class Driver implements BaseDriver
 {
     /**
-     * @var MongoDBClient
+     * @var BaseDriver
      */
     private $connection;
 
@@ -79,9 +78,7 @@ class Driver implements BaseDriver
     }
 
     /**
-     * @param \Iterator $cursor
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function fetch(\Iterator $cursor)
     {
@@ -89,10 +86,7 @@ class Driver implements BaseDriver
     }
 
     /**
-     * @param array $collection
-     * @param array $query
-     *
-     * @return \Iterator
+     * {@inheritdoc}
      */
     public function find($collection, array $query = [])
     {
@@ -100,9 +94,7 @@ class Driver implements BaseDriver
     }
 
     /**
-     * @param Collection $collection
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function generateQuery(Collection $collection)
     {
@@ -120,14 +112,16 @@ class Driver implements BaseDriver
         $this->getConnection()->insert($collection, $document);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function update($collection, $criteria, $document)
     {
         $this->getConnection()->update($collection, $criteria, $document);
     }
 
     /**
-     * @param string $collection
-     * @param array  $criteria
+     * {@inheritdoc}
      */
     public function remove($collection, $criteria)
     {
