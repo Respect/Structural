@@ -12,15 +12,13 @@ Respect/Structural
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Respect\Structural\Mapper;
-use Respect\Structural\Driver\Mongo\Style as MongoStyle;
-use Respect\Structural\Driver\Mongo\Driver as MongoDriver;
+use Respect\Structural\Driver\MongoDb\Style as MongoDbStyle;
+use Respect\Structural\Driver\MongoDb\Driver as MongoDbDriver;
 
-$mongoDb = new MongoClient();
-
-$driver = new MongoDriver($mongoDb, 'respect');
+$driver = MongoDbDriver::factory('respect');
 
 $mapper = new Mapper($driver);
-$mapper->setStyle(new MongoStyle());
+$mapper->setStyle(new MongoDbStyle());
 ```
 
 ### Persisting

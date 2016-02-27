@@ -4,19 +4,19 @@ namespace Respect\Structural\tests\Driver\Mongo;
 
 use Respect\Data\Collections\Collection;
 use Respect\Structural\Driver as BaseDriver;
-use Respect\Structural\Driver\Mongo\Driver;
+use Respect\Structural\Driver\MongoDb\MongoDriver;
 
-class DriverTest extends \PHPUnit_Framework_TestCase
+class MongoDriverTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Driver
+     * @var MongoDriver
      */
     private $driver;
 
     protected function setUp()
     {
-        if (!class_exists('\MongoClient')) {
-            $this->markTestSkipped('missing legacy mongo extension driver');
+        if (!extension_loaded('mongo')) {
+            $this->markTestSkipped('missing mongo extension');
         }
 
         parent::setUp();
@@ -24,7 +24,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             ->getMockBuilder(\MongoClient::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->driver = new Driver($client, 'collection');
+        $this->driver = new MongoDriver($client, 'database');
     }
 
     public function testDriverShouldAnInstanceOfDriverInterface()
