@@ -13,6 +13,8 @@
 *.phar
 *.rar
 *.rpm
+*.swo
+*.swp
 *.tar
 *.tgz
 *.xpi
