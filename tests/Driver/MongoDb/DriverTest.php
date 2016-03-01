@@ -2,57 +2,62 @@
 
 namespace Respect\Structural\tests\Driver\MongoDb;
 
-use MongoDB\BSON\ObjectID;
-use MongoDB\Client;
 use Respect\Data\Collections\Collection;
-use Respect\Structural\Driver as BaseDriver;
 use Respect\Structural\Driver\MongoDb\Driver;
+use Respect\Structural\Driver\MongoDb\MongoDbDriver;
+use Respect\Structural\Driver\MongoDb\MongoDriver;
 
 class DriverTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function testDriverShouldAnInstanceOfMongoLegacyDriver()
+    {
+        if (!extension_loaded('mongo')) {
+            $this->markTestSkipped('missing mongo extension');
+        }
+
+        $driverWrapper = Driver::factoryLegacy('database');
+        $this->assertInstanceOf(MongoDriver::class, $driverWrapper->getConnection());
+    }
+
+    public function testDriverShouldAnInstanceOfMongoDbDriver()
+    {
+        if (!extension_loaded('mongodb')) {
+            $this->markTestSkipped('missing mongo extension');
+        }
+
+        $driverWrapper = Driver::factory('database');
+        $this->assertInstanceOf(MongoDbDriver::class, $driverWrapper->getConnection());
+    }
+
     /**
-     * @var Driver
+     * @param string $method
+     * @param array  $arguments
+     * @dataProvider provideActionMethodsAndRespectiveArguments
      */
-    private $driver;
-
-    protected function setUp()
+    public function testDriverShouldCallMethodFromConnection($method, $arguments)
     {
-        if (!class_exists('\MongoDB\Driver\Manager')) {
-            $this->markTestSkipped('missing mongodb extension');
-        }
+        $mockDriver = $this->getMockForAbstractClass(\Respect\Structural\Driver::class);
+        $mockDriver->expects($this->once())->method($method);
 
-        if (!class_exists('\MongoDB\Client')) {
-            $this->markTestSkipped('missing mongodb library');
-        }
-
-        parent::setUp();
-        $client = $this
-            ->getMockBuilder(Client::class)
+        $driver = $this
+            ->getMockBuilder(Driver::class)
             ->disableOriginalConstructor()
+            ->setMethods(['getConnection'])
             ->getMock();
-        $this->driver = new Driver($client, 'collection');
+        $driver->expects($this->once())->method('getConnection')->willReturn($mockDriver);
+        call_user_func_array([$driver, $method], $arguments);
     }
 
-    public function testDriverShouldAnInstanceOfDriverInterface()
+    public function provideActionMethodsAndRespectiveArguments()
     {
-        $this->assertInstanceOf(BaseDriver::class, $this->driver);
-    }
-
-    public function testGenerateQueryShouldReturnSimpleFind()
-    {
-        $result = $this->driver->generateQuery(Collection::my_coll());
-        $this->assertEquals([], $result);
-    }
-
-    public function testGenerateQueryShouldReturnSimpleFindById()
-    {
-        $result = $this->driver->generateQuery(Collection::my_coll('56cf5c943f90a847400041ac'));
-        $this->assertEquals(['_id' => new ObjectID('56cf5c943f90a847400041ac')], $result);
-    }
-
-    public function testGenerateQueryShouldUsePartialResultSets()
-    {
-        $result = $this->driver->generateQuery(Collection::article()->author['56cf5c943f90a847400041ac']);
-        $this->assertEquals(['author._id' => new ObjectID('56cf5c943f90a847400041ac')], $result);
+        return [
+            'insert' => ['insert', ['collection', []]],
+            'update' => ['update', ['collection', [], []]],
+            'remove' => ['remove', ['collection', []]],
+            'fetch' => ['fetch', [new \IteratorIterator(new \ArrayObject())]],
+            'find' => ['find', ['collection', []]],
+            'generateQuery' => ['generateQuery', [Collection::coll()]],
+        ];
     }
 }

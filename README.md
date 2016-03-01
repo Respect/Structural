@@ -4,6 +4,7 @@ Respect/Structural
 [![Build Status](https://travis-ci.org/Respect/Structural.svg?branch=master)](https://travis-ci.org/Respect/Structural)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Respect/Structural/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Respect/Structural/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/Respect/Structural/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Respect/Structural/?branch=master)
+[![StyleCI](https://styleci.io/repos/2753337/shield)](https://styleci.io/repos/2753337)
 
 ### The Near-zero Part
 
@@ -12,15 +13,13 @@ Respect/Structural
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Respect\Structural\Mapper;
-use Respect\Structural\Driver\Mongo\Style as MongoStyle;
-use Respect\Structural\Driver\Mongo\Driver as MongoDriver;
+use Respect\Structural\Driver\MongoDb\Style as MongoDbStyle;
+use Respect\Structural\Driver\MongoDb\Driver as MongoDbDriver;
 
-$mongoDb = new MongoClient();
-
-$driver = new MongoDriver($mongoDb, 'respect');
+$driver = MongoDbDriver::factory('respect');
 
 $mapper = new Mapper($driver);
-$mapper->setStyle(new MongoStyle());
+$mapper->setStyle(new MongoDbStyle());
 ```
 
 ### Persisting
