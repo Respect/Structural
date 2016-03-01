@@ -16,3 +16,4 @@ before_script:
 
 script:
   - composer tests
+  - composer csfix
