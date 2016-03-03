@@ -1,18 +1,14 @@
 <?php
 
-namespace Respect\Structural\tests\Driver\Mongo;
+namespace Respect\Structural\Tests\Driver\Mongo;
 
 use Respect\Data\Collections\Collection;
 use Respect\Structural\Driver as BaseDriver;
 use Respect\Structural\Driver\MongoDb\MongoDriver;
+use Respect\Structural\Tests\Driver\TestCase;
 
-class MongoDriverTest extends \PHPUnit_Framework_TestCase
+class MongoDriverTest extends TestCase
 {
-    /**
-     * @var MongoDriver
-     */
-    private $driver;
-
     protected function setUp()
     {
         if (!extension_loaded('mongo')) {
@@ -20,33 +16,106 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
         }
 
         parent::setUp();
-        $client = $this
-            ->getMockBuilder(\MongoClient::class)
+    }
+
+    public function createDriver($connection = null)
+    {
+        if (is_null($connection)) {
+            $connection = $this->createConnection();
+        }
+        return new MongoDriver($connection, 'database');
+    }
+
+    public function getConnectionInterface()
+    {
+        return \MongoClient::class;
+    }
+
+    public function getMockConnectionRetrieveEmptyResult()
+    {
+        $collection = $this->getMockBuilder(\MongoCollection::class)
             ->disableOriginalConstructor()
+            ->setMethods(['find'])
             ->getMock();
-        $this->driver = new MongoDriver($client, 'database');
+        $collection->expects($this->once())->method('find')->willReturn(new \ArrayIterator());
+
+        $database = $this->getMockBuilder(\MongoDB::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['selectCollection'])
+            ->getMock();
+        $database->expects($this->once())->method('selectCollection')->willReturn($collection);
+
+        return $this->createConnection('selectDB', $database);
     }
 
-    public function testDriverShouldAnInstanceOfDriverInterface()
+    public function getMockConnectionRetrieveFilledResult()
     {
-        $this->assertInstanceOf(BaseDriver::class, $this->driver);
+        $result = new \ArrayIterator([
+            [
+                '_id' => 1,
+                'name' => 'Test',
+            ],
+        ]);
+        $collection = $this->getMockBuilder(\MongoCollection::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['find'])
+            ->getMock();
+        $collection->expects($this->once())->method('find')->willReturn($result);
+
+        $database = $this->getMockBuilder(\MongoDB::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['selectCollection'])
+            ->getMock();
+        $database->expects($this->once())->method('selectCollection')->willReturn($collection);
+
+        return $this->createConnection('selectDB', $database);
     }
 
-    public function testGenerateQueryShouldReturnSimpleFind()
+    public function provideGenerateQueryShouldReturnSimpleFindById()
     {
-        $result = $this->driver->generateQuery(Collection::my_coll());
-        $this->assertEquals([], $result);
+        return [
+            'simple return' => [
+                Collection::my_coll('56d6fb233f90a8231f0041a9'),
+                [
+                    '_id' => '56d6fb233f90a8231f0041a9'
+                ]
+            ]
+        ];
     }
 
-    public function testGenerateQueryShouldReturnSimpleFindById()
+    public function provideCollectionAndSearchShouldRetrieveEmptyResult()
     {
-        $result = $this->driver->generateQuery(Collection::my_coll(42));
-        $this->assertEquals(['_id' => new \MongoInt32(42)], $result);
+        return [
+            ['collection', ['_id' => 1]]
+        ];
     }
 
-    public function testGenerateQueryShouldUsePartialResultSets()
+    public function provideGenerateQueryShouldUsePartialResultSets()
     {
-        $result = $this->driver->generateQuery(Collection::article()->author['56cf5c943f90a847400041ac']);
-        $this->assertEquals(['author._id' => new \MongoId('56cf5c943f90a847400041ac')], $result);
+        return [
+            'simple' => [
+                Collection::article()->author['56d6fb233f90a8231f0041a9'],
+                [
+                    'author._id' => new \MongoId('56d6fb233f90a8231f0041a9'),
+                ]
+            ]
+        ];
+    }
+
+
+    public function provideCollectionAndSearchShouldRetrieveFilledResult()
+    {
+        return [
+            'simple result' => [
+                'authors',
+                ['_id' => 1],
+                new \ArrayIterator([
+                    [
+                        '_id' => 1,
+                        'name' => 'Test'
+                    ]
+                ])
+            ],
+        ];
     }
 }

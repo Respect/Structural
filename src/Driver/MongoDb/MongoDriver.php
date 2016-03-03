@@ -25,7 +25,7 @@ class MongoDriver extends AbstractDriver
     public function __construct(\MongoClient $connection, $database)
     {
         $this->connection = $connection;
-        $this->database = $connection->{$database};
+        $this->database = $connection->selectDB($database);
     }
 
     /**
@@ -62,7 +62,7 @@ class MongoDriver extends AbstractDriver
      */
     public function find($collection, array $query = [])
     {
-        $cursor = $this->getDatabase()->{$collection}->find($query);
+        $cursor = $this->getDatabase()->selectCollection($collection)->find($query);
         $cursor->rewind();
 
         return $cursor;
