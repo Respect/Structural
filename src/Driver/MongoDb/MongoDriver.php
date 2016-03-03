@@ -90,16 +90,16 @@ class MongoDriver extends AbstractDriver
      */
     public function insert($collection, $document)
     {
-        $this->getDatabase()->{$collection}->insert($document);
+        $this->getDatabase()->selectCollection($collection)->insert($document);
     }
 
     public function update($collection, $criteria, $document)
     {
-        $this->getDatabase()->{$collection}->update($criteria, $document);
+        $this->getDatabase()->selectCollection($collection)->update($criteria, $document);
     }
 
     public function remove($collection, $criteria)
     {
-        $this->getDatabase()->{$collection}->remove($criteria);
+        $this->getDatabase()->selectCollection($collection)->remove($criteria);
     }
 }

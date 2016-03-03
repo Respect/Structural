@@ -5,7 +5,6 @@ namespace Respect\Structural\Driver\MongoDb;
 use MongoDB\BSON\ObjectID;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Database;
-use Respect\Data\Collections\Collection;
 
 class MongoDbDriver extends AbstractDriver
 {

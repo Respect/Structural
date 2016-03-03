@@ -71,6 +71,60 @@ class MongoDriverTest extends TestCase
         return $this->createConnection('selectDB', $database);
     }
 
+    public function getMockConnectionInsertOne()
+    {
+        $collection = $this->getMockBuilder(\MongoCollection::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['insert'])
+            ->getMock();
+        $collection->expects($this->once())->method('insert')->willReturnCallback(function($document){
+            $document->_id = new \MongoId('56d6fb233f90a8231f0041a9');
+        });
+
+        $database = $this->getMockBuilder(\MongoDB::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['selectCollection'])
+            ->getMock();
+        $database->expects($this->once())->method('selectCollection')->willReturn($collection);
+
+        return $this->createConnection('selectDB', $database);
+    }
+
+    public function getMockConnectionUpdateOne()
+    {
+        $collection = $this->getMockBuilder(\MongoCollection::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['update'])
+            ->getMock();
+        $collection->expects($this->once())->method('update')->willReturn(null);
+
+        $database = $this->getMockBuilder(\MongoDB::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['selectCollection'])
+            ->getMock();
+        $database->expects($this->once())->method('selectCollection')->willReturn($collection);
+
+        return $this->createConnection('selectDB', $database);
+    }
+
+    public function getMockConnectionRemoveOne()
+    {
+        $collection = $this->getMockBuilder(\MongoCollection::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['remove'])
+            ->getMock();
+        $collection->expects($this->once())->method('remove')->willReturn(null);
+
+        $database = $this->getMockBuilder(\MongoDB::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['selectCollection'])
+            ->getMock();
+        $database->expects($this->once())->method('selectCollection')->willReturn($collection);
+
+        return $this->createConnection('selectDB', $database);
+    }
+
+
     public function provideGenerateQueryShouldReturnSimpleFindById()
     {
         return [

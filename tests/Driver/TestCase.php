@@ -31,14 +31,29 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     abstract public function getConnectionInterface();
 
     /**
-     * @return array
+     * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    abstract public function connectionRetrieveEmptyResult();
+    abstract public function getMockConnectionRetrieveEmptyResult();
 
     /**
-     * @return array
+     * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    abstract public function connectionRetrieveFilledResult();
+    abstract public function getMockConnectionRetrieveFilledResult();
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    abstract public function getMockConnectionInsertOne();
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    abstract public function getMockConnectionUpdateOne();
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    abstract public function getMockConnectionRemoveOne();
 
     /**
      * @return array
@@ -114,7 +129,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function testFindRetrieveEmptyResult($collection, $search)
     {
-        $driver = $this->createDriver($this->connectionRetrieveEmptyResult());
+        $driver = $this->createDriver($this->getMockConnectionRetrieveEmptyResult());
 
         $this->assertEmpty($driver->find($collection, $search));
     }
@@ -126,7 +141,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function testFindRetrieveFilledResult($collection, $search, $expected)
     {
-        $driver = $this->createDriver($this->connectionRetrieveFilledResult());
+        $driver = $this->createDriver($this->getMockConnectionRetrieveFilledResult());
 
         $result = $driver->find($collection, $search);
 
@@ -163,5 +178,28 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     {
         $result = $this->driver->generateQuery($mappedCollection);
         $this->assertEquals($expectedResult, $result);
+    }
+
+    public function testInsertDataShouldRetrieveId()
+    {
+        $data = new \stdClass();
+        $data->name = 'Test';
+
+        $this->createDriver($this->getMockConnectionInsertOne())->insert('author', $data);
+
+        $this->assertObjectHasAttribute('_id', $data);
+    }
+
+    public function testUpdateDataShouldWithSuccess()
+    {
+        $data = new \stdClass();
+        $data->name = 'Test';
+
+        $this->createDriver($this->getMockConnectionUpdateOne())->update('author', ['name' => 'Test'], $data);
+    }
+
+    public function testRemoveDataShouldWithSuccess()
+    {
+        $this->createDriver($this->getMockConnectionRemoveOne())->remove('author', ['name' => 'Test']);
     }
 }

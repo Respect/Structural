@@ -5,6 +5,9 @@ namespace Respect\Structural\Tests\Driver\MongoDb;
 use MongoDB\BSON\ObjectID;
 use MongoDB\Client;
 use MongoDB\Database;
+use MongoDB\Driver\Manager;
+use MongoDB\Driver\WriteResult;
+use MongoDB\InsertOneResult;
 use Respect\Data\Collections\Collection;
 use Respect\Structural\Driver as BaseDriver;
 use Respect\Structural\Driver\MongoDb\MongoDbDriver;
@@ -38,7 +41,7 @@ class MongoDbDriverTest extends TestCase
         return Client::class;
     }
 
-    public function connectionRetrieveEmptyResult()
+    public function getMockConnectionRetrieveEmptyResult()
     {
         $collection = $this->getMockBuilder(\MongoDB\Collection::class)
             ->disableOriginalConstructor()
@@ -55,7 +58,7 @@ class MongoDbDriverTest extends TestCase
         return $this->createConnection('selectDatabase', $database);
     }
 
-    public function connectionRetrieveFilledResult()
+    public function getMockConnectionRetrieveFilledResult()
     {
         $result = new \ArrayIterator([
             [
@@ -77,6 +80,64 @@ class MongoDbDriverTest extends TestCase
 
         return $this->createConnection('selectDatabase', $database);
     }
+
+    public function getMockConnectionInsertOne()
+    {
+        $insertResult = $this->getMockBuilder(InsertOneResult::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getInsertedId'])
+            ->getMock();
+        $insertResult->expects($this->once())->method('getInsertedId')->willReturn(new ObjectID('56d6fb233f90a8231f0041a9'));
+
+        $collection = $this->getMockBuilder(\MongoDB\Collection::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['insertOne'])
+            ->getMock();
+        $collection->expects($this->once())->method('insertOne')->willReturn($insertResult);
+
+        $database = $this->getMockBuilder(Database::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['selectCollection'])
+            ->getMock();
+        $database->expects($this->once())->method('selectCollection')->willReturn($collection);
+
+        return $this->createConnection('selectDatabase', $database);
+    }
+
+    public function getMockConnectionUpdateOne()
+    {
+        $collection = $this->getMockBuilder(\MongoDB\Collection::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['updateOne'])
+            ->getMock();
+        $collection->expects($this->once())->method('updateOne')->willReturn(null);
+
+        $database = $this->getMockBuilder(Database::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['selectCollection'])
+            ->getMock();
+        $database->expects($this->once())->method('selectCollection')->willReturn($collection);
+
+        return $this->createConnection('selectDatabase', $database);
+    }
+
+    public function getMockConnectionRemoveOne()
+    {
+        $collection = $this->getMockBuilder(\MongoDB\Collection::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['deleteOne'])
+            ->getMock();
+        $collection->expects($this->once())->method('deleteOne')->willReturn(null);
+
+        $database = $this->getMockBuilder(Database::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['selectCollection'])
+            ->getMock();
+        $database->expects($this->once())->method('selectCollection')->willReturn($collection);
+
+        return $this->createConnection('selectDatabase', $database);
+    }
+
 
     public function provideGenerateQueryShouldReturnSimpleFindById()
     {
