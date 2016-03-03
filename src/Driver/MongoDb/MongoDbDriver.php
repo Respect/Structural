@@ -74,7 +74,7 @@ class MongoDbDriver extends AbstractDriver
 
     /**
      * @param string $collection
-     * @param array $query
+     * @param array  $query
      *
      * @return \Iterator
      */

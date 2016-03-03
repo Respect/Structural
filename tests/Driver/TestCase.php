@@ -21,6 +21,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @param object $connection
+     *
      * @return Driver
      */
     abstract public function createDriver($connection = null);
@@ -77,7 +78,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $method
-     * @param mixed $result
+     * @param mixed  $result
+     *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
     protected function createConnection($method = null, $result = null)
@@ -124,8 +126,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider provideCollectionAndSearchShouldRetrieveEmptyResult
+     *
      * @param string $collection
-     * @param array $search
+     * @param array  $search
      */
     public function testFindRetrieveEmptyResult($collection, $search)
     {
@@ -136,8 +139,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider provideCollectionAndSearchShouldRetrieveFilledResult
+     *
      * @param string $collection
-     * @param array $search
+     * @param array  $search
      */
     public function testFindRetrieveFilledResult($collection, $search, $expected)
     {
@@ -160,7 +164,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      * @dataProvider provideGenerateQueryShouldReturnSimpleFindById
      *
      * @param Collection $collection
-     * @param array $expectedResult
+     * @param array      $expectedResult
      */
     public function testGenerateQueryShouldReturnSimpleFindById(Collection $collection, array $expectedResult)
     {
@@ -171,8 +175,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider provideGenerateQueryShouldUsePartialResultSets
+     *
      * @param Collection $mappedCollection
-     * @param array $expectedResult
+     * @param array      $expectedResult
      */
     public function testGenerateQueryShouldUsePartialResultSets(Collection $mappedCollection, array $expectedResult)
     {

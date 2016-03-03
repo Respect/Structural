@@ -5,7 +5,6 @@ namespace Respect\Structural\Tests\Driver\DynamoDb;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Result;
 use Respect\Data\Collections\Collection;
-use Respect\Structural\Driver as BaseDriver;
 use Respect\Structural\Driver\DynamoDb\Driver;
 use Respect\Structural\Tests\Driver\TestCase;
 
@@ -16,6 +15,7 @@ class DriverTest extends TestCase
         if (is_null($connection)) {
             $connection = $this->createConnection();
         }
+
         return new Driver($connection);
     }
 
@@ -35,28 +35,32 @@ class DriverTest extends TestCase
             ],
             'Count' => 1
         ]);
+
         return $this->createConnection('scan', $result);
     }
 
     public function getMockConnectionInsertOne()
     {
         $result = new Result([
-            "Attributes" => [
-                "_id" => ['N', 1]
+            'Attributes' => [
+                '_id' => ['N', 1]
             ]
         ]);
+
         return $this->createConnection('putItem', $result);
     }
 
     public function getMockConnectionUpdateOne()
     {
         $result = new Result([]);
+
         return $this->createConnection('updateItem', $result);
     }
 
     public function getMockConnectionRemoveOne()
     {
         $result = new Result([]);
+
         return $this->createConnection('deleteItem', $result);
     }
 

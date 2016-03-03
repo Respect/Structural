@@ -5,11 +5,8 @@ namespace Respect\Structural\Tests\Driver\MongoDb;
 use MongoDB\BSON\ObjectID;
 use MongoDB\Client;
 use MongoDB\Database;
-use MongoDB\Driver\Manager;
-use MongoDB\Driver\WriteResult;
 use MongoDB\InsertOneResult;
 use Respect\Data\Collections\Collection;
-use Respect\Structural\Driver as BaseDriver;
 use Respect\Structural\Driver\MongoDb\MongoDbDriver;
 use Respect\Structural\Tests\Driver\TestCase;
 
@@ -33,6 +30,7 @@ class MongoDbDriverTest extends TestCase
         if (is_null($connection)) {
             $connection = $this->createConnection();
         }
+
         return new MongoDbDriver($connection, 'database');
     }
 
@@ -138,7 +136,6 @@ class MongoDbDriverTest extends TestCase
         return $this->createConnection('selectDatabase', $database);
     }
 
-
     public function provideGenerateQueryShouldReturnSimpleFindById()
     {
         return [
@@ -169,7 +166,6 @@ class MongoDbDriverTest extends TestCase
             ]
         ];
     }
-
 
     public function provideCollectionAndSearchShouldRetrieveFilledResult()
     {

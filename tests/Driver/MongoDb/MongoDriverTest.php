@@ -3,7 +3,6 @@
 namespace Respect\Structural\Tests\Driver\Mongo;
 
 use Respect\Data\Collections\Collection;
-use Respect\Structural\Driver as BaseDriver;
 use Respect\Structural\Driver\MongoDb\MongoDriver;
 use Respect\Structural\Tests\Driver\TestCase;
 
@@ -23,6 +22,7 @@ class MongoDriverTest extends TestCase
         if (is_null($connection)) {
             $connection = $this->createConnection();
         }
+
         return new MongoDriver($connection, 'database');
     }
 
@@ -77,7 +77,7 @@ class MongoDriverTest extends TestCase
             ->disableOriginalConstructor()
             ->setMethods(['insert'])
             ->getMock();
-        $collection->expects($this->once())->method('insert')->willReturnCallback(function($document){
+        $collection->expects($this->once())->method('insert')->willReturnCallback(function ($document) {
             $document->_id = new \MongoId('56d6fb233f90a8231f0041a9');
         });
 
@@ -124,7 +124,6 @@ class MongoDriverTest extends TestCase
         return $this->createConnection('selectDB', $database);
     }
 
-
     public function provideGenerateQueryShouldReturnSimpleFindById()
     {
         return [
@@ -155,7 +154,6 @@ class MongoDriverTest extends TestCase
             ]
         ];
     }
-
 
     public function provideCollectionAndSearchShouldRetrieveFilledResult()
     {

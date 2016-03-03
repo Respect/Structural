@@ -27,3 +27,4 @@ finder:
         - "*.php"
     path:
         - "src"
+        - "tests"
