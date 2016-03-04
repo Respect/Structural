@@ -1,11 +1,15 @@
 {
     "name": "respect/structural",
-    "description": "Fluent Resource Toolkit",
+    "description": "Fluent NoSQL Toolkit",
+    "keywords": ["nosql", "mongo", "mongodb", "aws", "dynamodb", "data", "odm", "respect", "aws dynamo", "dynamo", "aws dynamodb"],
     "version": "0.1.0-dev",
     "type": "library",
     "time": "2012-05-05 19:11:23",
     "homepage": "http://respect.li",
     "license": "BSD Style",
+    "support": {
+        "issues": "https://github.com/Respect/Structural/issues"
+    },
     "authors": [
         {
             "name": "Alexandre Gomes Gaigalas",
