@@ -2,7 +2,6 @@
     "name": "respect/structural",
     "description": "Fluent NoSQL Toolkit",
     "keywords": ["nosql", "mongo", "mongodb", "aws", "dynamodb", "data", "odm", "respect", "aws dynamo", "dynamo", "aws dynamodb"],
-    "version": "0.1.0-dev",
     "type": "library",
     "time": "2012-05-05 19:11:23",
     "homepage": "http://respect.li",
@@ -46,7 +45,7 @@
     ],
     "require": {
         "php": "^5.6 || ^7.0",
-        "respect/data": "dev-master",
+        "respect/data": "^0.2",
         "ramsey/uuid": "^3.2"
     },
     "require-dev": {
@@ -78,6 +77,11 @@
     "autoload-dev": {
         "psr-4": {
             "Respect\\Structural\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
         }
     }
 }
