@@ -5,6 +5,7 @@ namespace Respect\Structural\Tests\Driver\DynamoDb;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Result;
 use Ramsey\Uuid\UuidFactoryInterface;
+use Ramsey\Uuid\UuidInterface;
 use Respect\Data\Collections\Collection;
 use Respect\Structural\Driver\DynamoDb\Driver;
 use Respect\Structural\Tests\Driver\TestCase;
@@ -17,8 +18,11 @@ class DriverTest extends TestCase
             $connection = $this->createConnection();
         }
 
+        $uuid4 = $this->getMockForAbstractClass(UuidInterface::class, ['toString']);
+        $uuid4->expects($this->any())->method('toString')->willReturn(uniqid());
+
         $uuid = $this->getMockForAbstractClass(UuidFactoryInterface::class, ['uuid4']);
-        $uuid->expects($this->any())->method('uuid4')->willReturn(uniqid());
+        $uuid->expects($this->any())->method('uuid4')->willReturn($uuid4);
 
         return new Driver($connection, $uuid);
     }

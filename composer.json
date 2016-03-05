@@ -61,7 +61,8 @@
     },
     "scripts": {
         "tests": "phpunit --colors",
-        "coverage": "phpunit --coverage-html build/coverage tests",
+        "coverage-html": "phpunit --coverage-html build/coverage tests",
+        "coverage": "phpunit -c phpunit.xml.dist --coverage-clover=clover.xml",
         "md": "phpmd src,tests text cleancode,codesize,controversial,design,naming,unusedcode",
         "csfix": "php-cs-fixer fix"
     },
