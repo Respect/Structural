@@ -4,6 +4,8 @@ namespace Respect\Structural\Driver\DynamoDb;
 
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidFactoryInterface;
 use Respect\Data\CollectionIterator;
 use Respect\Data\Collections\Collection;
 use Respect\Structural\Driver as BaseDriver;
@@ -21,14 +23,20 @@ class Driver implements BaseDriver
     private $marshaler;
 
     /**
+     * @var UuidFactoryInterface
+     */
+    private $uuid;
+
+    /**
      * Driver constructor.
      *
      * @param \Aws\DynamoDb\DynamoDbClient $connection
      */
-    public function __construct(DynamoDbClient $connection)
+    public function __construct(DynamoDbClient $connection, UuidFactoryInterface $uuid)
     {
         $this->connection = $connection;
         $this->marshaler = new Marshaler();
+        $this->uuid = $uuid;
     }
 
     /**
@@ -148,6 +156,7 @@ class Driver implements BaseDriver
             'Item' => $this->marshaler->marshalItem($document),
         ];
 
+        $document->_id = $this->uuid->uuid4()->toString();
         $this->getConnection()->putItem($args);
     }
 

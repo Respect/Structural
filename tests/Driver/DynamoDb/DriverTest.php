@@ -1,148 +1,132 @@
 <?php
 
-namespace Respect\Structural\tests\Driver\DynamoDb;
+namespace Respect\Structural\Tests\Driver\DynamoDb;
 
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\Result;
+use Ramsey\Uuid\UuidFactoryInterface;
+use Ramsey\Uuid\UuidInterface;
 use Respect\Data\Collections\Collection;
-use Respect\Structural\Driver as BaseDriver;
 use Respect\Structural\Driver\DynamoDb\Driver;
+use Respect\Structural\Tests\Driver\TestCase;
 
-class DriverTest extends \PHPUnit_Framework_TestCase
+class DriverTest extends TestCase
 {
-    /**
-     * @var Driver
-     */
-    private $driver;
-
-    /**
-     * @var \Aws\DynamoDb\DynamoDbClient
-     */
-    private $client;
-
-    protected function setUp()
+    public function createDriver($connection = null)
     {
-        parent::setUp();
+        if (is_null($connection)) {
+            $connection = $this->createConnection();
+        }
 
-        $this->client = $this
-            ->getMockBuilder(DynamoDbClient::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $uuid4 = $this->getMockForAbstractClass(UuidInterface::class, ['toString']);
+        $uuid4->expects($this->any())->method('toString')->willReturn(uniqid());
 
-        $this->driver = new Driver($this->client);
+        $uuid = $this->getMockForAbstractClass(UuidFactoryInterface::class, ['uuid4']);
+        $uuid->expects($this->any())->method('uuid4')->willReturn($uuid4);
+
+        return new Driver($connection, $uuid);
     }
 
-    public function testDriverShouldAnInstanceOfDriverInterface()
+    public function getMockConnectionRetrieveEmptyResult()
     {
-        $this->assertInstanceOf(BaseDriver::class, $this->driver);
+        return $this->createConnection('scan', new \Aws\Result(['Count' => 0]));
     }
 
-    public function testRetrieveConnection()
-    {
-        $this->assertSame($this->client, $this->driver->getConnection());
-    }
-
-    public function testShouldRetrieveCurrentCursorValueAndNext()
-    {
-        $iterator = new \ArrayIterator(['a', 'b']);
-
-        $this->assertEquals('a', $this->driver->fetch($iterator));
-        $this->assertEquals('b', $iterator->current());
-    }
-
-    public function testFindRetrieveEmptyIterator()
-    {
-        $result = new \Aws\Result([
-            'Count' => 0
-        ]);
-
-        $client = $this
-            ->getMockBuilder(DynamoDbClient::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['scan'])
-            ->getMock();
-
-        $client->expects($this->once())
-            ->method('scan')
-            ->will($this->returnValue($result));
-
-        $driver = new Driver($client);
-
-        $response = $driver->find('authors', ['_id' => 1]);
-
-        $this->assertEmpty($response);
-    }
-
-    public function testFindRetrieveFormatedData()
+    public function getMockConnectionRetrieveFilledResult()
     {
         $result = new \Aws\Result([
             'Items' => [
                 [
-                    '_id'   => ['N' => '1'],
-                    'name'  => ['S' => 'Test']
+                    '_id' => ['N' => '1'],
+                    'name' => ['S' => 'Test']
                 ]
             ],
             'Count' => 1
         ]);
 
-        $client = $this
-            ->getMockBuilder(DynamoDbClient::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['scan'])
-            ->getMock();
+        return $this->createConnection('scan', $result);
+    }
 
-        $client->expects($this->once())
-            ->method('scan')
-            ->will($this->returnValue($result));
-
-        $driver = new Driver($client);
-
-        $response = $driver->find('authors', ['_id' => 1]);
-
-        $expected = new \ArrayIterator([
-            [
-                '_id'  => 1,
-                'name' => 'Test'
+    public function getMockConnectionInsertOne()
+    {
+        $result = new Result([
+            'Attributes' => [
+                '_id' => ['N', 1]
             ]
         ]);
 
-        $this->assertEquals($expected, $response);
+        return $this->createConnection('putItem', $result);
     }
 
-    public function testGenerateQueryShouldReturnSimpleFind()
+    public function getMockConnectionUpdateOne()
     {
-        $result = $this->driver->generateQuery(Collection::my_coll());
-        $this->assertEquals([], $result);
+        $result = new Result([]);
+
+        return $this->createConnection('updateItem', $result);
     }
 
-    public function testGenerateQueryShouldReturnSimpleFindById()
+    public function getMockConnectionRemoveOne()
     {
-        $collection = Collection::my_coll(42);
+        $result = new Result([]);
 
-        $result = $this->driver->generateQuery($collection);
+        return $this->createConnection('deleteItem', $result);
+    }
 
-        $expected = [
-            '_id' => [
-                'AttributeValueList'    => [
-                    ['N' => 42]
-                ],
-                'ComparisonOperator'    => 'EQ'
+    public function getConnectionInterface()
+    {
+        return DynamoDbClient::class;
+    }
+
+    public function provideGenerateQueryShouldReturnSimpleFindById()
+    {
+        return [
+            'simple return' => [
+                Collection::my_coll(42),
+                [
+                    '_id' => [
+                        'AttributeValueList' => [['N' => 42]],
+                        'ComparisonOperator' => 'EQ'
+                    ]
+                ]
             ]
         ];
-
-        $this->assertEquals($expected, $result);
     }
 
-    public function testGenerateQueryShouldUsePartialResultSets()
+    public function provideCollectionAndSearchShouldRetrieveEmptyResult()
     {
-        $result = $this->driver->generateQuery(Collection::article()->author[42]);
-        $expected = [
-            '_id' => [
-                'AttributeValueList'    => [
-                    ['N' => 42]
-                ],
-                'ComparisonOperator'    => 'EQ'
+        return [
+            'empty result' => ['authors', ['_id' => 1]],
+        ];
+    }
+
+    public function provideCollectionAndSearchShouldRetrieveFilledResult()
+    {
+        return [
+            'simple result' => [
+                'authors',
+                ['_id' => 1],
+                new \ArrayIterator([
+                    [
+                        '_id' => 1,
+                        'name' => 'Test'
+                    ]
+                ])
+            ],
+        ];
+    }
+
+    public function provideGenerateQueryShouldUsePartialResultSets()
+    {
+        return [
+            'simple' => [
+                Collection::article()->author[42],
+                [
+                    '_id' => [
+                        'AttributeValueList' => [['N' => 42]],
+                        'ComparisonOperator' => 'EQ'
+                    ]
+                ]
             ]
         ];
-        $this->assertEquals($expected, $result);
     }
 }

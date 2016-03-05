@@ -25,7 +25,7 @@ class MongoDriver extends AbstractDriver
     public function __construct(\MongoClient $connection, $database)
     {
         $this->connection = $connection;
-        $this->database = $connection->{$database};
+        $this->database = $connection->selectDB($database);
     }
 
     /**
@@ -62,7 +62,7 @@ class MongoDriver extends AbstractDriver
      */
     public function find($collection, array $query = [])
     {
-        $cursor = $this->getDatabase()->{$collection}->find($query);
+        $cursor = $this->getDatabase()->selectCollection($collection)->find($query);
         $cursor->rewind();
 
         return $cursor;
@@ -90,16 +90,16 @@ class MongoDriver extends AbstractDriver
      */
     public function insert($collection, $document)
     {
-        $this->getDatabase()->{$collection}->insert($document);
+        $this->getDatabase()->selectCollection($collection)->insert($document);
     }
 
     public function update($collection, $criteria, $document)
     {
-        $this->getDatabase()->{$collection}->update($criteria, $document);
+        $this->getDatabase()->selectCollection($collection)->update($criteria, $document);
     }
 
     public function remove($collection, $criteria)
     {
-        $this->getDatabase()->{$collection}->remove($criteria);
+        $this->getDatabase()->selectCollection($collection)->remove($criteria);
     }
 }

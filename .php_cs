@@ -10,6 +10,7 @@ $finder = Symfony\CS\Finder\DefaultFinder::create()
 return Symfony\CS\Config\Config::create()
     ->level(\Symfony\CS\FixerInterface::PSR2_LEVEL)
     ->fixers(array(
+        '-psr0',
         // All items of the @param, @throws, @return, @var, and @type phpdoc
         // tags must be aligned vertically.
         'phpdoc_params',

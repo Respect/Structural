@@ -4,7 +4,7 @@ namespace Respect\Structural\Driver\MongoDb;
 
 use MongoDB\BSON\ObjectID;
 use MongoDB\Client as MongoDBClient;
-use Respect\Data\Collections\Collection;
+use MongoDB\Database;
 
 class MongoDbDriver extends AbstractDriver
 {
@@ -12,6 +12,11 @@ class MongoDbDriver extends AbstractDriver
      * @var MongoDBClient
      */
     private $connection;
+
+    /**
+     * @var Database
+     */
+    private $database;
 
     /**
      * Driver constructor.
@@ -68,22 +73,22 @@ class MongoDbDriver extends AbstractDriver
     }
 
     /**
-     * @param array $collection
-     * @param array $query
+     * @param string $collection
+     * @param array  $query
      *
      * @return \Iterator
      */
     public function find($collection, array $query = [])
     {
         $cursor = $this->getDatabase()->selectCollection($collection)->find($query);
-        $iterator = new \IteratorIterator($cursor);
+        $iterator = new \ArrayIterator($cursor);
         $iterator->rewind();
 
         return $iterator;
     }
 
     /**
-     * @param Collection $collection
+     * @param string $collection
      * @param $document
      *
      * @return void
