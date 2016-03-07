@@ -1,6 +1,11 @@
 Respect/Structural
 ==================
 
+[![Latest Stable Version](https://poser.pugx.org/respect/structural/v/stable)](https://packagist.org/packages/respect/structural)
+[![Total Downloads](https://poser.pugx.org/respect/structural/downloads)](https://packagist.org/packages/respect/structural)
+[![Latest Unstable Version](https://poser.pugx.org/respect/structural/v/unstable)](https://packagist.org/packages/respect/structural)
+[![License](https://poser.pugx.org/respect/structural/license)](https://packagist.org/packages/respect/structural)
+
 [![Build Status](https://travis-ci.org/Respect/Structural.svg?branch=master)](https://travis-ci.org/Respect/Structural)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Respect/Structural/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Respect/Structural/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/Respect/Structural/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Respect/Structural/?branch=master)
