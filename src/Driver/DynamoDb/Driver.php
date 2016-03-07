@@ -151,12 +151,13 @@ class Driver implements BaseDriver
      */
     public function insert($collection, $document)
     {
+        $document->_id = $this->uuid->uuid4()->toString();
+
         $args = [
             'TableName' => $collection,
             'Item' => $this->marshaler->marshalItem($document),
         ];
 
-        $document->_id = $this->uuid->uuid4()->toString();
         $this->getConnection()->putItem($args);
     }
 
